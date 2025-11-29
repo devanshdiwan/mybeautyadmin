@@ -45,6 +45,13 @@
         .animate-enter { 
             animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
 
         /* Button Press Effect */
         .btn-press { transition: transform 0.1s; }
@@ -82,8 +89,11 @@
         let currentSettings = {
             brandName: 'DREAMYBEAUTYHUB',
             brandLogo: '',
-            freeImageHostApiKey: ''
+            freeImageHostApiKey: '',
+            adminPasscode: '798582' // Default Passcode
         };
+        let isAuthenticated = sessionStorage.getItem('admin_auth') === 'true';
+        let isSettingsLoaded = false;
 
         // --- Helpers ---
         function showToast(message, isError = false) {
@@ -170,13 +180,35 @@
                                 <i data-lucide="settings" class="w-4 h-4"></i> <span class="hidden sm:inline">Settings</span>
                             </button>
                             <div class="h-6 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-                            <a href="user.html" target="_blank" class="btn-press text-gray-500 hover:text-rose-600 font-medium px-2 py-2 rounded-md transition flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wide">
-                                <i data-lucide="external-link" class="w-4 h-4"></i> <span class="hidden sm:inline">View Site</span>
-                            </a>
+                             <button onclick="window.actions.logout()" class="btn-press text-gray-400 hover:text-rose-600 p-2" title="Logout">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </nav>
+            `;
+        }
+        
+        function renderLockScreen() {
+            return `
+                <div class="min-h-screen flex items-center justify-center bg-rose-50 px-4">
+                    <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl w-full max-w-md text-center animate-enter border border-rose-100">
+                        <div class="bg-rose-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <i data-lucide="lock" class="w-8 h-8 text-rose-500"></i>
+                        </div>
+                        <h1 class="font-serif text-3xl font-bold text-gray-900 mb-2">Creator Studio</h1>
+                        <p class="text-gray-500 text-sm mb-8 font-medium">Enter passcode to access your dashboard</p>
+                        
+                        <form onsubmit="window.actions.unlock(event)" class="space-y-5">
+                            <input type="password" id="unlock-pass" placeholder="••••••" class="w-full text-center text-3xl tracking-[0.5em] font-bold border border-gray-200 bg-gray-50 focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 rounded-xl py-4 transition-all placeholder-gray-300 text-gray-800" autofocus required inputmode="numeric">
+                            
+                            <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/30 transition transform active:scale-95 flex items-center justify-center gap-2">
+                                <i data-lucide="unlock" class="w-4 h-4"></i> Unlock
+                            </button>
+                        </form>
+                    </div>
+                </div>
             `;
         }
 
@@ -364,6 +396,20 @@
                             </div>
                         </div>
 
+                         <div class="border-t border-gray-100 pt-8">
+                            <h3 class="text-lg font-bold text-gray-900 mb-1">Security</h3>
+                            <p class="text-sm text-gray-500 mb-4">Protect your creator studio.</p>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Admin Passcode</label>
+                                <div class="relative">
+                                    <input type="text" id="setting-passcode" value="${currentSettings.adminPasscode || ''}" placeholder="Enter 6-digit code" class="w-full rounded-lg border-gray-200 bg-rose-50/30 p-2 text-sm focus:border-rose-500 focus:ring-rose-500 transition font-mono tracking-widest">
+                                    <i data-lucide="lock" class="absolute right-3 top-2.5 w-4 h-4 text-gray-400"></i>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-2">This code is required to unlock the admin panel.</p>
+                            </div>
+                        </div>
+
                         <div class="border-t border-gray-100 pt-8">
                             <h3 class="text-lg font-bold text-gray-900 mb-1">Integrations</h3>
                             <p class="text-sm text-gray-500 mb-4">Configure external services.</p>
@@ -497,6 +543,31 @@
         };
 
         const actions = {
+            unlock: function(e) {
+                e.preventDefault();
+                const input = document.getElementById('unlock-pass');
+                const val = input.value;
+                // Use default if not yet set in DB
+                const correct = currentSettings.adminPasscode || '798582';
+                
+                if(val === correct) {
+                    sessionStorage.setItem('admin_auth', 'true');
+                    isAuthenticated = true;
+                    showToast('Welcome back, Creator.');
+                    render();
+                } else {
+                    input.classList.add('animate-shake', 'border-red-500', 'text-red-500');
+                    setTimeout(() => input.classList.remove('animate-shake', 'border-red-500', 'text-red-500'), 500);
+                    showToast('Incorrect passcode', true);
+                    input.value = '';
+                }
+            },
+            logout: function() {
+                sessionStorage.removeItem('admin_auth');
+                isAuthenticated = false;
+                render();
+                showToast('Locked successfully.');
+            },
             handleUpload: async function(input, targetId) {
                 if (input.files && input.files[0]) {
                     const originalHTML = input.parentElement.innerHTML;
@@ -595,12 +666,13 @@
 
                 const brandName = document.getElementById('setting-brandName').value;
                 const brandLogo = document.getElementById('setting-brandLogo').value;
+                const adminPasscode = document.getElementById('setting-passcode').value;
                 const freeImageHostApiKey = document.getElementById('setting-api').value;
 
-                set(ref(db, 'settings'), { brandName, brandLogo, freeImageHostApiKey })
+                set(ref(db, 'settings'), { brandName, brandLogo, freeImageHostApiKey, adminPasscode })
                     .then(() => {
                         showToast("Settings saved successfully!");
-                        currentSettings = { brandName, brandLogo, freeImageHostApiKey };
+                        currentSettings = { brandName, brandLogo, freeImageHostApiKey, adminPasscode };
                     })
                     .catch(err => showToast("Error: " + err.message, true))
                     .finally(() => {
@@ -698,6 +770,26 @@
 
         function render() {
             const app = document.getElementById('app');
+            
+            // Only render if settings loaded (to know correct passcode)
+            if (!isSettingsLoaded) {
+                 app.innerHTML = `
+                    <div class="flex justify-center items-center h-screen bg-rose-50">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
+                            <p class="text-rose-400 font-serif italic animate-pulse">Loading Studio...</p>
+                        </div>
+                    </div>
+                 `;
+                 return;
+            }
+
+            if (!isAuthenticated) {
+                app.innerHTML = renderLockScreen();
+                if(window.lucide) window.lucide.createIcons();
+                return;
+            }
+
             if (router.view === 'dashboard') {
                 app.innerHTML = renderDashboard();
             } else if (router.view === 'new') {
@@ -717,7 +809,7 @@
         // Init Data Streams
         onValue(ref(db, 'posts'), (snapshot) => {
             currentPosts = snapshot.val() || {};
-            if (router.view === 'dashboard') render(); 
+            if (isAuthenticated && router.view === 'dashboard') render(); 
         });
 
         onValue(ref(db, 'settings'), (snapshot) => {
@@ -725,33 +817,32 @@
             currentSettings = { 
                 brandName: data.brandName || 'DREAMYBEAUTYHUB', 
                 brandLogo: data.brandLogo || '', 
-                freeImageHostApiKey: data.freeImageHostApiKey || '' 
+                freeImageHostApiKey: data.freeImageHostApiKey || '',
+                adminPasscode: data.adminPasscode || '798582' // Default passcode from DB or Hardcoded
             };
+            
+            if (!isSettingsLoaded) {
+                isSettingsLoaded = true;
+                render();
+            }
         });
 
         onValue(ref(db, 'subscribers'), (snapshot) => {
             currentSubscribers = snapshot.val() || {};
-            if (router.view === 'subscribers') render();
+            if (isAuthenticated && router.view === 'subscribers') render();
         });
 
         onValue(ref(db, 'pages'), (snapshot) => {
             currentPages = snapshot.val() || {};
-            if (router.view === 'pages') render(); // Re-render if looking at pages to show updates
+            if (isAuthenticated && router.view === 'pages') render();
         });
 
-        // Initial render
+        // Initial render (shows loading until settings come in)
         render();
 
     </script>
 
-    <div id="app">
-        <div class="flex justify-center items-center h-screen bg-rose-50">
-            <div class="flex flex-col items-center gap-4">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
-                <p class="text-rose-400 font-serif italic animate-pulse">Loading Studio...</p>
-            </div>
-        </div>
-    </div>
+    <div id="app"></div>
 
 </body>
 </html>
