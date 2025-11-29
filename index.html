@@ -1,1069 +1,757 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | DreamyBeautyHub</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Quill Editor -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-
+    <title>DreamyBeautyHub - Creator Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            },
+            colors: {
+              brand: {
+                50: '#fff1f2',
+                100: '#ffe4e6',
+                200: '#fecdd3',
+                300: '#fda4af',
+                400: '#fb7185',
+                500: '#f43f5e', // Rose
+                600: '#e11d48',
+              },
+              gold: {
+                 500: '#c5a059',
+              }
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --rose: #E8A0BF;
-            --rose-dark: #D488A3;
-            --rose-light: #F3D1DC;
-            --cream: #FFF8F3;
-            --white: #FFFFFF;
-            --charcoal: #2D2D2D;
-            --gray: #6B6B6B;
-            --light-gray: #F5F5F5;
-            --border: #E5E5E5;
-            --danger: #EF4444;
-            --success: #10B981;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--light-gray);
-            color: var(--charcoal);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Login */
-        .login-overlay {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-        }
-
-        .login-card {
-            background: var(--white);
-            padding: 60px;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 450px;
-            width: 90%;
-        }
-
-        .login-card h2 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--charcoal);
-        }
-
-        .login-card p {
-            color: var(--gray);
-            margin-bottom: 35px;
-            font-size: 1.05rem;
-        }
-
-        .login-card input {
-            width: 100%;
-            padding: 18px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 25px;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-
-        .login-card input:focus {
-            outline: none;
-            border-color: var(--rose);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 300px;
-            background: var(--white);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 35px 25px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 60px;
-        }
-
-        .brand img {
-            height: 55px;
-        }
-
-        .brand-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
-        }
-
-        .nav-item {
-            padding: 18px 22px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            color: var(--charcoal);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .nav-item i {
-            width: 22px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        .nav-item:hover {
-            background: var(--cream);
-            color: var(--rose-dark);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
-            color: var(--white);
-        }
-
-        /* Main */
-        .main {
-            flex: 1;
-            padding: 45px;
-            overflow-y: auto;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 45px;
-        }
-
-        .page-title {
-            font-size: 2.5rem;
-            color: var(--charcoal);
-        }
-
-        .btn {
-            padding: 14px 32px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(232, 160, 191, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(232, 160, 191, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--light-gray);
-            color: var(--charcoal);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: var(--white);
-        }
-
-        .btn-danger:hover {
-            background: #DC2626;
-        }
-
-        .btn-sm {
-            padding: 10px 20px;
-            font-size: 0.85rem;
-        }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-
-        .stat-card {
-            background: var(--white);
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-value {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--rose-dark);
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: var(--gray);
-            font-size: 1rem;
-        }
-
-        /* Card */
-        .card {
-            background: var(--white);
-            border-radius: 16px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
-
-        /* Table */
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 18px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: var(--light-gray);
-            font-weight: 600;
-            color: var(--charcoal);
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-
-        tbody tr {
-            transition: background 0.2s;
-        }
-
-        tbody tr:hover {
-            background: var(--cream);
-        }
-
-        .table-img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        /* Form */
-        .form-card {
-            background: var(--white);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 35px;
-        }
-
-        .form-group {
-            margin-bottom: 28px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: var(--charcoal);
-            font-size: 0.95rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--rose);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
-        }
-
-        /* Editor */
-        #editor {
-            height: 450px;
-        }
-
-        .ql-toolbar {
-            border-radius: 12px 12px 0 0 !important;
-            border: 2px solid var(--border) !important;
-            border-bottom: none !important;
-        }
-
-        .ql-container {
-            border: 2px solid var(--border) !important;
-            border-radius: 0 0 12px 12px !important;
-        }
-
-        /* Views */
-        .view {
-            display: none;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        /* Category List */
-        .category-list {
-            list-style: none;
-        }
-
-        .category-item {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
-        }
-
-        .category-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .category-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .category-img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        .category-name {
-            font-weight: 600;
-            font-size: 1.15rem;
-            color: var(--charcoal);
-        }
-
-        .category-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Upload Progress */
-        .upload-progress {
-            display: none;
-            color: var(--rose);
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .main {
-                padding: 25px;
-            }
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-        }
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Professional View Transition */
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-enter { 
+            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+        }
+
+        /* Button Press Effect */
+        .btn-press { transition: transform 0.1s; }
+        .btn-press:active { transform: scale(0.95); }
     </style>
 </head>
+<body class="bg-rose-50 min-h-screen">
 
-<body>
-    <!-- Login -->
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-card">
-            <h2>🔐 Admin Access</h2>
-            <p>Enter your PIN to continue</p>
-            <input type="password" id="pinInput" placeholder="Enter PIN" maxlength="6">
-            <button class="btn btn-primary" onclick="admin.login()">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </button>
-            <div class="nav-item" onclick="admin.navigate('posts')">
-                <i class="fas fa-images"></i> Posts
-            </div>
-            <div class="nav-item" onclick="admin.navigate('categories')">
-                <i class="fas fa-tags"></i> Categories
-            </div>
-            <div class="nav-item" onclick="window.open('user.html', '_blank')">
-                <i class="fas fa-external-link-alt"></i> View Site
-            </div>
-            </aside>
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-3 pointer-events-none"></div>
 
-            <!-- Main -->
-            <main class="main">
-                <!-- Dashboard -->
-                <div id="dashboard" class="view active">
-                    <div class="page-header">
-                        <h1 class="page-title">Dashboard</h1>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalPosts">0</div>
-                            <div class="stat-label">Total Posts</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalCategories">0</div>
-                            <div class="stat-label">Categories</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="featuredPosts">0</div>
-                            <div class="stat-label">Featured Posts</div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Firebase Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-                <!-- Posts -->
-                <div id="posts" class="view">
-                    <div class="page-header">
-                        <h1 class="page-title">Posts</h1>
-                        <button class="btn btn-primary" onclick="admin.showPostEditor()">
-                            <i class="fas fa-plus"></i> New Post
-                        </button>
-                    </div>
-                    <div class="card">
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Date</th>
-                                        <th>Featured</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="postsTable">
-                                    <!-- Posts loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCGtnvcrDBBcLDUG1JRlXyIMtSezNg0GwQ",
+          authDomain: "dreamybeautyhub-3e78c.firebaseapp.com",
+          databaseURL: "https://dreamybeautyhub-3e78c-default-rtdb.firebaseio.com",
+          projectId: "dreamybeautyhub-3e78c",
+          storageBucket: "dreamybeautyhub-3e78c.firebasestorage.app",
+          messagingSenderId: "68196766734",
+          appId: "1:68196766734:web:b7f35fae922854a70a985f",
+          measurementId: "G-66PC2D53VP"
+        };
 
-                <!-- Post Editor -->
-                <div id="postEditor" class="view">
-                    <div class="page-header">
-                        <h1 class="page-title" id="editorTitle">Create Post</h1>
-                        <div style="display: flex; gap: 12px;">
-                            <button class="btn btn-secondary" onclick="admin.navigate('posts')">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                            <button class="btn btn-primary" onclick="admin.savePost()">
-                                <i class="fas fa-save"></i> Save Post
-                            </button>
-                        </div>
-                    </div>
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-                    <div class="form-card">
-                        <div class="form-group">
-                            <label class="form-label">Post Title</label>
-                            <input type="text" id="postTitle" class="form-control"
-                                placeholder="Enter a captivating title...">
-                        </div>
+        // --- Global State ---
+        let currentPosts = {};
+        let currentSubscribers = {};
+        let currentPages = {};
+        let currentSettings = {
+            brandName: 'DREAMYBEAUTYHUB',
+            brandLogo: '',
+            freeImageHostApiKey: ''
+        };
 
-                        <div class="form-group">
-                            <label class="form-label">Featured Image</label>
-                            <div style="display: flex; gap: 12px;">
-                                <input type="text" id="postImage" class="form-control"
-                                    placeholder="Image URL will appear here..." readonly style="flex: 1;">
-                                <input type="file" id="postImageFile" accept="image/*" style="display: none;"
-                                    onchange="admin.uploadImage(this)">
-                                <button class="btn btn-primary"
-                                    onclick="document.getElementById('postImageFile').click()">
-                                    <i class="fas fa-upload"></i> Upload
-                                </button>
-                            </div>
-                            <div class="upload-progress" id="uploadProgress">Uploading...</div>
-                        </div>
+        // --- Helpers ---
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl text-sm font-medium transform transition-all duration-500 translate-y-10 opacity-0 ${isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-900 text-white'}`;
+            toast.innerHTML = `
+                <i data-lucide="${isError ? 'alert-circle' : 'check-circle'}" class="w-5 h-5 ${isError ? 'text-red-500' : 'text-green-400'}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            if(window.lucide) window.lucide.createIcons();
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Category</label>
-                                <select id="postCategory" class="form-control">
-                                    <option value="">Select Category</option>
-                                </select>
-                            </div>
+            // Animate In
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
 
-                            <div class="form-group">
-                                <label class="form-label">Featured Post</label>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="postFeatured">
-                                    <label for="postFeatured" style="margin: 0;">Mark as featured</label>
-                                </div>
-                            </div>
-                        </div>
+            // Animate Out & Remove
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
 
-                        <div class="form-group">
-                            <label class="form-label">Content</label>
-                            <div id="editor"></div>
-                        </div>
-                    </div>
-                </div>
+        async function uploadToFreeImageHost(file) {
+            const apiKey = currentSettings.freeImageHostApiKey;
+            if (!apiKey) {
+                showToast("Please save your FreeImage.Host API Key in Settings first.", true);
+                return null;
+            }
 
-                <!-- Categories -->
-                <div id="categories" class="view">
-                    <div class="page-header">
-                        <h1 class="page-title">Categories</h1>
-                    </div>
+            const formData = new FormData();
+            formData.append("source", file);
 
-                    <div class="form-card">
-                        <h3 style="margin-bottom: 25px; font-size: 1.3rem;" id="categoryFormTitle">Add New Category</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Category Name</label>
-                                <input type="text" id="categoryName" class="form-control"
-                                    placeholder="e.g., Fall Nails, Winter Nails">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Image URL</label>
-                                <input type="text" id="categoryImage" class="form-control"
-                                    placeholder="https://example.com/image.jpg">
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 12px;">
-                            <button class="btn btn-primary" id="categoryActionBtn" onclick="admin.handleCategory()">
-                                <i class="fas fa-plus"></i> Add Category
-                            </button>
-                            <button class="btn btn-secondary" id="cancelCategoryBtn" style="display: none;"
-                                onclick="admin.resetCategoryForm()">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                        </div>
-                    </div>
-
-                    <ul class="category-list" id="categoryList">
-                        <!-- Categories loaded here -->
-                    </ul>
-                </div>
-            </main>
-
-            <!-- Quill -->
-            <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
-            <!-- Firebase -->
-            <script type="module">
-                import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-                import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, updateDoc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-                import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-
-                const firebaseConfig = {
-                    apiKey: "AIzaSyApYYIEiyvpNGO9m1g7JBA3e4Q6x1CSrMM",
-                    authDomain: "dreamybeautyhub-b0500.firebaseapp.com",
-                    databaseURL: "https://dreamybeautyhub-b0500-default-rtdb.firebaseio.com",
-                    projectId: "dreamybeautyhub-b0500",
-                    storageBucket: "dreamybeautyhub-b0500.firebasestorage.app",
-                    messagingSenderId: "465258211378",
-                    appId: "1:465258211378:web:2635d10695b0a39970742b",
-                    measurementId: "G-CLQSNKV9GE"
-                };
-
-                const app = initializeApp(firebaseConfig);
-                const db = getFirestore(app);
-                const storage = getStorage(app);
-
-                // Quill Editor
-                const quill = new Quill('#editor', {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                            [{ 'header': [1, 2, 3, false] }],
-                            ['bold', 'italic', 'underline', 'strike'],
-                            ['blockquote', 'code-block'],
-                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                            [{ 'color': [] }, { 'background': [] }],
-                            ['link', 'image'],
-                            ['clean']
-                        ]
-                    }
+            try {
+                const response = await fetch(`https://freeimage.host/api/1/upload?key=${apiKey}`, {
+                    method: "POST",
+                    body: formData,
                 });
 
-                class AdminApp {
-                    constructor() {
-                        this.currentPostId = null;
-                        this.currentCategoryId = null;
-                        this.init();
-                    }
+                const data = await response.json();
 
-                    init() {
-                        if (sessionStorage.getItem('admin_auth') === 'true') {
-                            document.getElementById('loginOverlay').style.display = 'none';
-                            this.loadDashboard();
-                        }
+                if (data.status_code === 200 && data.image && data.image.url) {
+                    return data.image.url;
+                } else {
+                    throw new Error(data.error ? data.error.message : (data.status_txt || "Upload failed"));
+                }
+            } catch (error) {
+                console.error("Upload Error:", error);
+                showToast("Image upload failed: " + error.message, true);
+                return null;
+            }
+        }
 
-                        document.getElementById('pinInput').addEventListener('keypress', (e) => {
-                            if (e.key === 'Enter') this.login();
-                        });
-
-                        document.getElementById('categoryName').addEventListener('keypress', (e) => {
-                            if (e.key === 'Enter') this.handleCategory();
-                        });
-                    }
-
-                    login() {
-                        const pin = document.getElementById('pinInput').value;
-                        if (pin === '798582') {
-                            sessionStorage.setItem('admin_auth', 'true');
-                            document.getElementById('loginOverlay').style.display = 'none';
-                            this.loadDashboard();
-                        } else {
-                            alert('❌ Invalid PIN');
-                        }
-                    }
-
-                    navigate(viewId) {
-                        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-                        document.getElementById(viewId).classList.add('active');
-
-                        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                        event.currentTarget.classList.add('active');
-
-                        if (viewId === 'posts') this.loadPosts();
-                        if (viewId === 'categories') this.loadCategories();
-                        if (viewId === 'dashboard') this.loadDashboard();
-                    }
-
-                    async loadDashboard() {
-                        try {
-                            const postsSnap = await getDocs(collection(db, "posts"));
-                            const catsSnap = await getDocs(collection(db, "categories"));
-
-                            let featured = 0;
-                            postsSnap.forEach(doc => {
-                                if (doc.data().featured) featured++;
-                            });
-
-                            document.getElementById('totalPosts').innerText = postsSnap.size;
-                            document.getElementById('totalCategories').innerText = catsSnap.size;
-                            document.getElementById('featuredPosts').innerText = featured;
-                        } catch (e) {
-                            console.error("Error loading dashboard:", e);
-                        }
-                    }
-
-                    async loadPosts() {
-                        try {
-                            const snapshot = await getDocs(collection(db, "posts"));
-                            const tbody = document.getElementById('postsTable');
-                            tbody.innerHTML = '';
-
-                            if (snapshot.empty) {
-                                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 50px; color: var(--gray);">No posts yet. Create your first post!</td></tr>';
-                                return;
-                            }
-
-                            snapshot.forEach(docSnap => {
-                                const post = docSnap.data();
-                                const tr = document.createElement('tr');
-
-                                const date = new Date(post.date).toLocaleDateString();
-                                const featured = post.featured ? '<span class="badge badge-success">Featured</span>' : '';
-
-                                tr.innerHTML = `
-                            <td>
-                                ${post.image ?
-                                        `<img src="${post.image}" class="table-img" alt="${post.title}">` :
-                                        '<div style="width: 70px; height: 70px; background: var(--border); border-radius: 10px;"></div>'
-                                    }
-                            </td>
-                            <td style="font-weight: 500;">${post.title}</td>
-                            <td>${post.category || 'Uncategorized'}</td>
-                            <td>${date}</td>
-                            <td>${featured}</td>
-                            <td>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-primary btn-sm" onclick="admin.editPost('${docSnap.id}')">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="admin.deletePost('${docSnap.id}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+        // --- Render Helpers ---
+        function renderNavbar() {
+            const activeClass = (view) => window.router.view === view ? 'text-rose-600 bg-rose-50' : 'text-gray-500 hover:text-rose-600 hover:bg-gray-50';
+            
+            return `
+            <nav class="bg-white border-b border-rose-100 sticky top-0 z-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-20 py-4 sm:py-0 gap-4 sm:gap-0">
+                        <div class="flex items-center">
+                            <a href="admin.html" class="flex items-center gap-3 btn-press">
+                                <div class="bg-rose-500 text-white p-2 rounded-full shadow-md">
+                                    <i data-lucide="feather" class="w-5 h-5"></i>
                                 </div>
-                            </td>
-                        `;
-                                tbody.appendChild(tr);
-                            });
-                        } catch (e) {
-                            console.error("Error loading posts:", e);
-                        }
-                    }
+                                <span class="font-serif font-bold text-xl tracking-tight text-gray-900">Creator<span class="text-rose-500">Studio</span></span>
+                            </a>
+                        </div>
+                        <div class="flex items-center space-x-1 sm:space-x-2 w-full sm:w-auto justify-center overflow-x-auto">
+                             <button onclick="window.router.navigate('dashboard')" class="${activeClass('dashboard')} btn-press font-medium px-3 py-2 rounded-md transition flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wide">
+                                <i data-lucide="layout-grid" class="w-4 h-4"></i> <span class="hidden sm:inline">Stories</span>
+                            </button>
+                             <button onclick="window.router.navigate('pages')" class="${activeClass('pages')} btn-press font-medium px-3 py-2 rounded-md transition flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wide">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> <span class="hidden sm:inline">Pages</span>
+                            </button>
+                             <button onclick="window.router.navigate('subscribers')" class="${activeClass('subscribers')} btn-press font-medium px-3 py-2 rounded-md transition flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wide">
+                                <i data-lucide="users" class="w-4 h-4"></i> <span class="hidden sm:inline">Subscribers</span>
+                            </button>
+                             <button onclick="window.router.navigate('settings')" class="${activeClass('settings')} btn-press font-medium px-3 py-2 rounded-md transition flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wide">
+                                <i data-lucide="settings" class="w-4 h-4"></i> <span class="hidden sm:inline">Settings</span>
+                            </button>
+                            <div class="h-6 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                            <a href="user.html" target="_blank" class="btn-press text-gray-500 hover:text-rose-600 font-medium px-2 py-2 rounded-md transition flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wide">
+                                <i data-lucide="external-link" class="w-4 h-4"></i> <span class="hidden sm:inline">View Site</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            `;
+        }
 
-                    showPostEditor(id = null) {
-                        this.currentPostId = id;
-                        this.navigate('postEditor');
-                        this.loadCategoriesSelect();
-
-                        if (id) {
-                            document.getElementById('editorTitle').innerText = 'Edit Post';
-                        } else {
-                            document.getElementById('postTitle').value = '';
-                            document.getElementById('postImage').value = '';
-                            document.getElementById('postImageFile').value = '';
-                            document.getElementById('postFeatured').checked = false;
-                            quill.root.innerHTML = '';
-                            document.getElementById('editorTitle').innerText = 'Create Post';
-                        }
-                    }
-
-                    async uploadImage(input) {
-                        const file = input.files[0];
-                        if (!file) return;
-
-                        const progress = document.getElementById('uploadProgress');
-                        progress.style.display = 'block';
-                        progress.innerText = `Uploading ${file.name}...`;
-
-                        try {
-                            const storageRef = ref(storage, 'posts/' + Date.now() + '_' + file.name);
-                            await uploadBytes(storageRef, file);
-                            const url = await getDownloadURL(storageRef);
-
-                            document.getElementById('postImage').value = url;
-                            progress.innerText = '✅ Upload complete!';
-                            progress.style.color = 'var(--success)';
-
-                            setTimeout(() => {
-                                progress.style.display = 'none';
-                                progress.style.color = 'var(--rose)';
-                            }, 2000);
-                        } catch (e) {
-                            console.error("Error uploading:", e);
-                            progress.innerText = '❌ Error: ' + e.message;
-                            progress.style.color = 'var(--danger)';
-                        }
-                    }
-
-                    async editPost(id) {
-                        this.currentPostId = id;
-                        this.navigate('postEditor');
-                        this.loadCategoriesSelect();
-                        document.getElementById('editorTitle').innerText = 'Edit Post';
-
-                        try {
-                            const docRef = doc(db, "posts", id);
-                            const docSnap = await getDoc(docRef);
-
-                            if (docSnap.exists()) {
-                                const data = docSnap.data();
-                                document.getElementById('postTitle').value = data.title;
-                                document.getElementById('postImage').value = data.image || '';
-                                document.getElementById('postCategory').value = data.category || '';
-                                document.getElementById('postFeatured').checked = data.featured || false;
-                                quill.root.innerHTML = data.content;
-                            }
-                        } catch (e) {
-                            console.error("Error editing post:", e);
-                            alert('❌ Error loading post');
-                        }
-                    }
-
-                    async savePost() {
-                        const title = document.getElementById('postTitle').value.trim();
-                        const image = document.getElementById('postImage').value.trim();
-                        const category = document.getElementById('postCategory').value;
-                        const content = quill.root.innerHTML;
-                        const featured = document.getElementById('postFeatured').checked;
-
-                        if (!title) {
-                            alert('❌ Please enter a title');
-                            return;
-                        }
-
-                        if (!category) {
-                            alert('❌ Please select a category');
-                            return;
-                        }
-
-                        const postData = {
-                            title,
-                            image,
-                            category,
-                            content,
-                            featured,
-                            date: new Date().toISOString()
-                        };
-
-                        try {
-                            if (this.currentPostId) {
-                                await updateDoc(doc(db, "posts", this.currentPostId), postData);
-                                alert('✅ Post updated!');
-                            } else {
-                                await addDoc(collection(db, "posts"), postData);
-                                alert('✅ Post created!');
-                            }
-                            this.navigate('posts');
-                        } catch (e) {
-                            console.error("Error saving post:", e);
-                            alert('❌ Error saving post');
-                        }
-                    }
-
-                    async deletePost(id) {
-                        if (confirm('⚠️ Delete this post?')) {
-                            try {
-                                await deleteDoc(doc(db, "posts", id));
-                                alert('✅ Post deleted!');
-                                this.loadPosts();
-                            } catch (e) {
-                                console.error("Error deleting post:", e);
-                                alert('❌ Error deleting post');
-                            }
-                        }
-                    }
-
-                    async loadCategories() {
-                        try {
-                            const snapshot = await getDocs(collection(db, "categories"));
-                            const list = document.getElementById('categoryList');
-                            list.innerHTML = '';
-
-                            if (snapshot.empty) {
-                                list.innerHTML = '<p style="text-align: center; padding: 50px; color: var(--gray);">No categories yet. Add your first category!</p>';
-                                return;
-                            }
-
-                            snapshot.forEach(docSnap => {
-                                const data = docSnap.data();
-                                const li = document.createElement('li');
-                                li.className = 'category-item';
-
-                                const safeName = data.name.replace(/'/g, "\\'");
-                                const safeImage = (data.image || '').replace(/'/g, "\\'");
-
-                                li.innerHTML = `
-                            <div class="category-info">
-                                ${data.image ?
-                                        `<img src="${data.image}" alt="${data.name}" class="category-img">` :
-                                        '<div style="width: 70px; height: 70px; background: var(--border); border-radius: 10px;"></div>'
-                                    }
-                                <span class="category-name">${data.name}</span>
+        function renderDashboard() {
+            const postsArr = Object.entries(currentPosts || {}).map(([key, val]) => ({id: key, ...val})).reverse();
+            
+            let listHtml = '';
+            if (postsArr.length === 0) {
+                listHtml = `
+                    <div class="p-10 sm:p-20 text-center text-gray-400 bg-white rounded-b-xl">
+                        <i data-lucide="sparkles" class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 text-rose-200"></i>
+                        <p class="mb-6 font-serif text-lg sm:text-xl text-gray-900">Your beauty journal is empty.</p>
+                        <button onclick="window.router.navigate('new')" class="btn-press text-rose-600 font-medium hover:text-rose-700 hover:underline">Start writing your first article</button>
+                    </div>
+                `;
+            } else {
+                postsArr.forEach((post, index) => {
+                    const dateStr = post.date ? new Date(post.date).toLocaleDateString() : '-';
+                    // Stagger animation for list items
+                    const delay = index * 50; 
+                    listHtml += `
+                        <div class="p-4 sm:p-6 flex items-center justify-between hover:bg-rose-50/50 transition border-b border-gray-100 last:border-0 group animate-enter" style="animation-delay: ${delay}ms; opacity: 0; animation-fill-mode: forwards;">
+                            <div class="flex-1 min-w-0 pr-4">
+                                <h3 class="text-base sm:text-lg font-serif font-bold text-gray-900 truncate mb-1">${post.title || 'Untitled'}</h3>
+                                <p class="text-[10px] sm:text-xs text-gray-500 flex flex-wrap items-center gap-2 sm:gap-3 uppercase tracking-wider">
+                                    <span class="font-semibold text-gray-700 truncate max-w-[100px] sm:max-w-none">${post.author || 'Editor'}</span>
+                                    <span class="w-1 h-1 bg-gray-300 rounded-full hidden sm:block"></span>
+                                    <span>${dateStr}</span>
+                                    ${(post.tags && post.tags[0]) ? `<span class="px-2 py-0.5 rounded-sm bg-rose-100 text-rose-700 text-[10px] font-bold hidden sm:inline-block">${post.tags[0]}</span>` : ''}
+                                </p>
                             </div>
-                            <div class="category-actions">
-                                <button class="btn btn-primary btn-sm" onclick="admin.editCategory('${docSnap.id}', '${safeName}', '${safeImage}')">
-                                    <i class="fas fa-edit"></i> Edit
+                            <div class="flex items-center gap-1 sm:gap-2">
+                                <button onclick="window.router.navigate('edit', '${post.id}')" class="btn-press p-2 text-gray-400 hover:text-rose-600 bg-gray-50 sm:bg-transparent rounded-full sm:rounded-none transition" title="Edit">
+                                    <i data-lucide="pen-line" class="w-4 h-4"></i>
                                 </button>
-                                <button class="btn btn-danger btn-sm" onclick="admin.deleteCategory('${docSnap.id}')">
-                                    <i class="fas fa-trash"></i>
+                                <button onclick="window.actions.deletePost('${post.id}')" class="btn-press p-2 text-gray-400 hover:text-red-600 bg-gray-50 sm:bg-transparent rounded-full sm:rounded-none transition" title="Delete">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
-                        `;
-                                list.appendChild(li);
-                            });
-                        } catch (e) {
-                            console.error("Error loading categories:", e);
-                        }
+                        </div>
+                    `;
+                });
+            }
+
+            return `
+                ${renderNavbar()}
+                <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-enter">
+                    <div class="flex justify-between items-center mb-6">
+                         <h1 class="text-2xl font-serif font-bold text-gray-900">Stories</h1>
+                         <button onclick="window.router.navigate('new')" class="btn-press bg-black hover:bg-gray-800 text-white px-5 py-2.5 rounded-full font-medium transition flex items-center gap-2 shadow-lg text-sm tracking-wide">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Create Story
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-rose-100 overflow-hidden">
+                        <div class="px-6 sm:px-8 py-4 sm:py-6 border-b border-rose-100 flex justify-between items-center bg-white">
+                            <h2 class="text-lg sm:text-xl font-serif font-bold text-gray-900">Published</h2>
+                            <div class="text-[10px] sm:text-xs font-bold text-rose-500 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full border border-rose-100">${postsArr.length} ENTRIES</div>
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            ${listHtml}
+                        </div>
+                    </div>
+                </main>
+            `;
+        }
+
+        function renderSubscribers() {
+            const subsArr = Object.entries(currentSubscribers || {}).map(([key, val]) => ({id: key, ...val})).reverse();
+            
+            let listHtml = '';
+            if (subsArr.length === 0) {
+                 listHtml = `<div class="p-10 text-center text-gray-400">No subscribers yet.</div>`;
+            } else {
+                subsArr.forEach((sub, index) => {
+                    const dateStr = sub.date ? new Date(sub.date).toLocaleDateString() : '-';
+                    const delay = index * 50;
+                    listHtml += `
+                        <div class="p-4 flex items-center justify-between hover:bg-rose-50/50 transition border-b border-gray-100 last:border-0 animate-enter" style="animation-delay: ${delay}ms; opacity: 0; animation-fill-mode: forwards;">
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-900">${sub.email}</h3>
+                                <p class="text-xs text-gray-400">Subscribed on ${dateStr}</p>
+                            </div>
+                            <button onclick="window.actions.deleteSubscriber('${sub.id}')" class="btn-press text-gray-400 hover:text-red-500 p-2">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            return `
+                ${renderNavbar()}
+                <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-serif font-bold text-gray-900">Newsletter Subscribers</h1>
+                        <button onclick="window.actions.addSubscriber()" class="btn-press bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full font-medium transition flex items-center gap-2 text-sm shadow-md">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Subscriber
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-rose-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-rose-100 bg-gray-50 flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Email List</span>
+                            <span class="bg-white text-rose-500 text-xs font-bold px-2 py-1 rounded border border-rose-100">${subsArr.length}</span>
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            ${listHtml}
+                        </div>
+                    </div>
+                </main>
+            `;
+        }
+
+        function renderPagesView() {
+            const currentPageId = window.router.param || 'about';
+            const content = currentPages[currentPageId] || '';
+            
+            const tabs = [
+                { id: 'about', label: 'About Us' },
+                { id: 'contact', label: 'Contact' },
+                { id: 'privacy', label: 'Privacy Policy' }
+            ];
+
+            return `
+                ${renderNavbar()}
+                <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-serif font-bold text-gray-900">Manage Pages</h1>
+                        <button onclick="window.actions.savePage(this, '${currentPageId}')" class="btn-press px-6 py-2 text-sm font-medium text-white bg-rose-500 rounded-full hover:bg-rose-600 shadow-md transition flex items-center justify-center min-w-[140px]">
+                            Save Changes
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-rose-100 overflow-hidden min-h-[500px] flex flex-col">
+                        <!-- Tabs -->
+                        <div class="flex border-b border-rose-100 overflow-x-auto">
+                            ${tabs.map(tab => `
+                                <button onclick="window.router.navigate('pages', '${tab.id}')" 
+                                    class="px-6 py-4 text-sm font-bold uppercase tracking-wider transition whitespace-nowrap btn-press ${currentPageId === tab.id ? 'text-rose-600 border-b-2 border-rose-500 bg-rose-50/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}">
+                                    ${tab.label}
+                                </button>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- Editor -->
+                        <div class="p-6 flex-1 flex flex-col">
+                            <p class="text-xs text-gray-400 mb-2 uppercase tracking-widest font-bold">Page Content (HTML supported)</p>
+                            <textarea id="page-content" class="flex-1 w-full p-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-rose-300 focus:ring-1 focus:ring-rose-300 font-serif text-gray-800 leading-relaxed resize-none focus:outline-none transition-colors" placeholder="Write your content here...">${content}</textarea>
+                        </div>
+                    </div>
+                </main>
+            `;
+        }
+
+        function renderSettings() {
+            return `
+                ${renderNavbar()}
+                <main class="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-serif font-bold text-gray-900">Settings</h1>
+                        <button onclick="window.actions.saveSettings(this)" class="btn-press px-6 py-2 text-sm font-medium text-white bg-rose-500 rounded-full hover:bg-rose-600 shadow-md transition flex items-center justify-center min-w-[140px]">
+                            Save Changes
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-rose-100 space-y-8">
+                        
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1">Branding</h3>
+                            <p class="text-sm text-gray-500 mb-4">Customize how your beauty hub looks to visitors.</p>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Brand Name</label>
+                                    <input type="text" id="setting-brandName" value="${currentSettings.brandName || ''}" class="w-full rounded-lg border-gray-200 bg-rose-50/30 p-2 text-sm focus:border-rose-500 focus:ring-rose-500 transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Logo URL (Optional)</label>
+                                    <div class="flex gap-2">
+                                         <input type="text" id="setting-brandLogo" value="${currentSettings.brandLogo || ''}" placeholder="https://..." class="w-full rounded-lg border-gray-200 bg-rose-50/30 p-2 text-sm focus:border-rose-500 focus:ring-rose-500 transition">
+                                         <label class="btn-press flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 transition text-sm font-medium whitespace-nowrap">
+                                            <i data-lucide="upload" class="w-4 h-4 mr-2"></i> Upload
+                                            <input type="file" class="hidden" onchange="window.actions.handleUpload(this, 'setting-brandLogo')">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-8">
+                            <h3 class="text-lg font-bold text-gray-900 mb-1">Integrations</h3>
+                            <p class="text-sm text-gray-500 mb-4">Configure external services.</p>
+                            
+                             <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">FreeImage.Host API Key</label>
+                                <input type="password" id="setting-api" value="${currentSettings.freeImageHostApiKey || ''}" placeholder="Enter your FreeImage.Host API key" class="w-full rounded-lg border-gray-200 bg-rose-50/30 p-2 text-sm focus:border-rose-500 focus:ring-rose-500 transition">
+                                <p class="text-xs text-gray-400 mt-2">Required for image uploads. Get one for free at <a href="https://freeimage.host/page/api" target="_blank" class="text-rose-500 underline">freeimage.host/page/api</a>.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </main>
+            `;
+        }
+
+        function renderEditor(postId = null) {
+            const existingPost = (postId && currentPosts && currentPosts[postId]) ? currentPosts[postId] : null;
+            const post = existingPost || { title: '', excerpt: '', content: '', coverImage: '', tags: [], author: 'DreamyBeauty Team' };
+            const isEditing = !!existingPost;
+
+            return `
+                <nav class="bg-white border-b border-rose-100 px-4 sm:px-6 py-4 sticky top-0 z-50">
+                    <div class="max-w-5xl mx-auto flex justify-between items-center">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <a href="#" onclick="window.router.navigate('dashboard'); return false;" class="text-gray-400 hover:text-gray-900 transition btn-press"><i data-lucide="arrow-left" class="w-5 h-5"></i></a>
+                            <span class="font-serif font-bold text-lg sm:text-xl text-gray-900 truncate max-w-[120px] sm:max-w-none">${isEditing ? 'Edit Story' : 'New Story'}</span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <button onclick="window.router.navigate('dashboard')" class="btn-press px-2 sm:px-4 py-2 text-[10px] sm:text-xs font-bold text-gray-500 hover:text-gray-900 uppercase tracking-wider">Discard</button>
+                            <button onclick="window.actions.savePost(this, '${isEditing ? postId : ''}')" class="btn-press px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium text-white bg-rose-500 rounded-full hover:bg-rose-600 shadow-md hover:shadow-lg transition transform whitespace-nowrap flex items-center justify-center min-w-[100px]">
+                                ${isEditing ? 'Save' : 'Publish'}
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+
+                <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-enter">
+                    <form id="postForm" class="space-y-6 sm:space-y-10" onsubmit="event.preventDefault();">
+                        
+                        <div class="space-y-4 sm:space-y-6">
+                            <input type="text" id="input-title" value="${post.title || ''}" placeholder="The Secret to Glowing Skin..." class="w-full text-3xl sm:text-5xl font-serif font-bold border-none bg-transparent placeholder-gray-200 text-gray-900 focus:ring-0 focus:outline-none px-0 leading-tight transition-all" required>
+                            <input type="text" id="input-excerpt" value="${post.excerpt || ''}" placeholder="Write a short, captivating summary..." class="w-full text-lg sm:text-xl text-gray-600 border-none bg-transparent placeholder-gray-300 focus:ring-0 focus:outline-none px-0 font-light transition-all">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Cover Image</label>
+                                <div class="flex gap-2">
+                                    <div class="relative flex-1">
+                                        <i data-lucide="image" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"></i>
+                                        <input type="url" id="input-image" value="${post.coverImage || ''}" placeholder="https://..." class="w-full pl-9 rounded-lg border-gray-200 bg-white p-2 text-sm focus:border-rose-500 focus:ring-rose-500 shadow-sm transition">
+                                    </div>
+                                    <label class="flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-lg cursor-pointer hover:bg-gray-800 transition text-sm font-medium whitespace-nowrap shadow-md btn-press">
+                                        <i data-lucide="upload" class="w-4 h-4 mr-2"></i> Upload
+                                        <input type="file" class="hidden" onchange="window.actions.handleUpload(this, 'input-image')">
+                                    </label>
+                                </div>
+                            </div>
+                             <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Author</label>
+                                <input type="text" id="input-author" value="${post.author || 'DreamyBeauty Team'}" class="w-full rounded-lg border-gray-200 bg-white p-2 text-sm focus:border-rose-500 focus:ring-rose-500 shadow-sm transition">
+                            </div>
+                        </div>
+                        
+                        <div>
+                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Topic Tags (Comma Separated)</label>
+                             <input type="text" id="input-tags" value="${(post.tags || []).join(', ')}" placeholder="Skincare, Wellness, Makeup Trends" class="w-full rounded-lg border-gray-200 bg-white p-2 text-sm focus:border-rose-500 focus:ring-rose-500 shadow-sm transition">
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Story Content</label>
+                            
+                            <!-- Editor Toolbar -->
+                            <div class="flex items-center gap-1 mb-2 p-2 bg-gray-50 border border-rose-100 rounded-lg flex-wrap">
+                                <button onclick="window.actions.insertFormat('b')" class="btn-press p-2 hover:bg-white hover:text-rose-500 rounded text-gray-500 transition" title="Bold"><i data-lucide="bold" class="w-4 h-4"></i></button>
+                                <button onclick="window.actions.insertFormat('i')" class="btn-press p-2 hover:bg-white hover:text-rose-500 rounded text-gray-500 transition" title="Italic"><i data-lucide="italic" class="w-4 h-4"></i></button>
+                                <button onclick="window.actions.insertFormat('h2')" class="btn-press p-2 hover:bg-white hover:text-rose-500 rounded text-gray-500 transition" title="Heading"><i data-lucide="heading-2" class="w-4 h-4"></i></button>
+                                <button onclick="window.actions.insertFormat('quote')" class="btn-press p-2 hover:bg-white hover:text-rose-500 rounded text-gray-500 transition" title="Quote"><i data-lucide="quote" class="w-4 h-4"></i></button>
+                                <button onclick="window.actions.insertFormat('link')" class="btn-press p-2 hover:bg-white hover:text-rose-500 rounded text-gray-500 transition" title="Link"><i data-lucide="link" class="w-4 h-4"></i></button>
+                                
+                                <div class="w-px h-6 bg-gray-200 mx-1"></div>
+
+                                <!-- Image Dropdown -->
+                                <div class="relative inline-block">
+                                    <button onclick="document.getElementById('editor-img-menu').classList.toggle('hidden')" class="btn-press p-2 hover:bg-white hover:text-rose-500 rounded text-gray-500 transition flex items-center gap-2" title="Insert Image">
+                                        <i data-lucide="image" class="w-4 h-4"></i> <span class="text-xs font-bold uppercase hidden sm:inline">Image</span> <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                    </button>
+                                    
+                                    <div id="editor-img-menu" class="hidden absolute left-0 top-full mt-2 w-72 bg-white border border-rose-100 shadow-xl rounded-xl p-4 z-20 animate-enter">
+                                        <div class="mb-4">
+                                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Upload Image</label>
+                                            <label class="btn-press flex items-center justify-center w-full px-4 py-3 bg-rose-50 text-rose-600 rounded-lg cursor-pointer hover:bg-rose-100 transition text-sm font-bold border border-rose-100 border-dashed">
+                                                <i data-lucide="upload-cloud" class="w-4 h-4 mr-2"></i> Choose File
+                                                <input type="file" class="hidden" onchange="window.actions.editorUploadImage(this)">
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="relative flex py-2 items-center">
+                                            <div class="flex-grow border-t border-gray-100"></div>
+                                            <span class="flex-shrink-0 mx-4 text-[10px] text-gray-400 font-bold uppercase">OR URL</span>
+                                            <div class="flex-grow border-t border-gray-100"></div>
+                                        </div>
+
+                                        <div class="mt-2">
+                                             <div class="flex gap-2">
+                                                <input type="text" id="editor-img-url" placeholder="https://..." class="w-full rounded-md border-gray-200 bg-gray-50 p-2 text-xs focus:border-rose-500 focus:ring-rose-500">
+                                                <button onclick="window.actions.editorInsertUrl()" class="bg-rose-500 text-white p-2 rounded-md hover:bg-rose-600 btn-press"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <textarea id="input-content" class="w-full h-[400px] sm:h-[600px] p-4 sm:p-8 rounded-xl border border-rose-100 bg-white shadow-sm focus:border-rose-300 focus:ring-1 focus:ring-rose-300 font-serif text-base sm:text-lg leading-loose resize-none focus:outline-none text-gray-700 placeholder-gray-300 transition-colors" placeholder="Start writing your beautiful story here..." required>${post.content || ''}</textarea>
+                        </div>
+                    </form>
+                </main>
+            `;
+        }
+
+        // --- App Controller ---
+        const router = {
+            view: 'dashboard', // dashboard | new | edit | settings | subscribers | pages
+            param: null,
+            navigate: function(view, param = null) {
+                this.view = view;
+                this.param = param;
+                render();
+            }
+        };
+
+        const actions = {
+            handleUpload: async function(input, targetId) {
+                if (input.files && input.files[0]) {
+                    const originalHTML = input.parentElement.innerHTML;
+                    input.parentElement.innerHTML = `<i class="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></i> Uploading...`;
+                    input.parentElement.classList.add('opacity-70', 'cursor-not-allowed');
+                    
+                    const url = await uploadToFreeImageHost(input.files[0]);
+                    
+                    input.parentElement.classList.remove('opacity-70', 'cursor-not-allowed');
+                    input.parentElement.innerHTML = originalHTML; // Restore button look
+                    
+                    if (url) {
+                        document.getElementById(targetId).value = url;
+                        showToast("Image uploaded successfully!");
+                    } else {
+                        // Toast handled in upload function
                     }
+                    if(window.lucide) window.lucide.createIcons();
+                }
+            },
+            
+            // --- Rich Text Actions ---
+            insertFormat: function(type) {
+                const textarea = document.getElementById('input-content');
+                if(!textarea) return;
 
-                    async loadCategoriesSelect() {
-                        try {
-                            const snapshot = await getDocs(collection(db, "categories"));
-                            const select = document.getElementById('postCategory');
-                            select.innerHTML = '<option value="">Select Category</option>';
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = textarea.value;
+                const selection = text.substring(start, end);
+                let replace = '';
 
-                            snapshot.forEach(docSnap => {
-                                const opt = document.createElement('option');
-                                opt.value = docSnap.data().name;
-                                opt.innerText = docSnap.data().name;
-                                select.appendChild(opt);
-                            });
-                        } catch (e) {
-                            console.error("Error loading categories:", e);
-                        }
-                    }
+                switch(type) {
+                    case 'b': replace = `<b>${selection || 'Bold text'}</b>`; break;
+                    case 'i': replace = `<i>${selection || 'Italic text'}</i>`; break;
+                    case 'h2': replace = `\n<h2 class="text-2xl font-bold mt-8 mb-4">${selection || 'Heading'}</h2>\n`; break;
+                    case 'quote': replace = `\n<blockquote>${selection || 'Quote'}</blockquote>\n`; break;
+                    case 'link': 
+                        const url = prompt('Enter Link URL:', 'https://');
+                        if(url) replace = `<a href="${url}" class="text-rose-500 underline decoration-rose-300 hover:text-rose-600">${selection || 'Link text'}</a>`; 
+                        break;
+                }
+                
+                if(replace) {
+                    textarea.value = text.substring(0, start) + replace + text.substring(end);
+                    textarea.focus();
+                    textarea.setSelectionRange(start + replace.length, start + replace.length);
+                }
+            },
+            
+            editorInsertUrl: function() {
+                const urlInput = document.getElementById('editor-img-url');
+                const url = urlInput.value;
+                if(url) {
+                    this.insertImageTag(url);
+                    urlInput.value = '';
+                    document.getElementById('editor-img-menu').classList.add('hidden');
+                    showToast("Image inserted!");
+                }
+            },
 
-                    async handleCategory() {
-                        if (this.currentCategoryId) {
-                            await this.updateCategory();
-                        } else {
-                            await this.addCategory();
-                        }
-                    }
-
-                    async addCategory() {
-                        const name = document.getElementById('categoryName').value.trim();
-                        const image = document.getElementById('categoryImage').value.trim();
-
-                        if (!name) {
-                            alert('❌ Please enter a category name');
-                            return;
-                        }
-
-                        try {
-                            await addDoc(collection(db, "categories"), { name, image });
-                            alert('✅ Category added!');
-                            this.resetCategoryForm();
-                            this.loadCategories();
-                        } catch (e) {
-                            console.error("Error adding category:", e);
-                            alert('❌ Error adding category');
-                        }
-                    }
-
-                    editCategory(id, name, image) {
-                        this.currentCategoryId = id;
-                        document.getElementById('categoryName').value = name;
-                        document.getElementById('categoryImage').value = image || '';
-                        document.getElementById('categoryFormTitle').innerText = 'Edit Category';
-                        document.getElementById('categoryActionBtn').innerHTML = '<i class="fas fa-save"></i> Update Category';
-                        document.getElementById('cancelCategoryBtn').style.display = 'inline-flex';
-                    }
-
-                    async updateCategory() {
-                        const name = document.getElementById('categoryName').value.trim();
-                        const image = document.getElementById('categoryImage').value.trim();
-
-                        if (!name) {
-                            alert('❌ Please enter a category name');
-                            return;
-                        }
-
-                        try {
-                            await updateDoc(doc(db, "categories", this.currentCategoryId), { name, image });
-                            alert('✅ Category updated!');
-                            this.resetCategoryForm();
-                            this.loadCategories();
-                        } catch (e) {
-                            console.error("Error updating category:", e);
-                            alert('❌ Error updating category');
-                        }
-                    }
-
-                    async deleteCategory(id) {
-                        if (confirm('⚠️ Delete this category?')) {
-                            try {
-                                await deleteDoc(doc(db, "categories", id));
-                                alert('✅ Category deleted!');
-                                this.loadCategories();
-                            } catch (e) {
-                                console.error("Error deleting category:", e);
-                                alert('❌ Error deleting category');
-                            }
-                        }
-                    }
-
-                    resetCategoryForm() {
-                        this.currentCategoryId = null;
-                        document.getElementById('categoryName').value = '';
-                        document.getElementById('categoryImage').value = '';
-                        document.getElementById('categoryFormTitle').innerText = 'Add New Category';
-                        document.getElementById('categoryActionBtn').innerHTML = '<i class="fas fa-plus"></i> Add Category';
-                        document.getElementById('cancelCategoryBtn').style.display = 'none';
+            editorUploadImage: async function(input) {
+                if (input.files && input.files[0]) {
+                    const label = input.parentElement;
+                    const originalContent = label.innerHTML;
+                    label.innerHTML = `<i class="animate-spin w-4 h-4 mr-2 border-2 border-rose-600/30 border-t-rose-600 rounded-full"></i> Uploading...`;
+                    
+                    const url = await uploadToFreeImageHost(input.files[0]);
+                    
+                    label.innerHTML = originalContent;
+                    
+                    if (url) {
+                        this.insertImageTag(url);
+                        document.getElementById('editor-img-menu').classList.add('hidden');
+                        showToast("Image uploaded and inserted!");
                     }
                 }
+            },
 
-                window.admin = new AdminApp();
-            </script>
+            insertImageTag: function(url) {
+                const textarea = document.getElementById('input-content');
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = textarea.value;
+                
+                const imgTag = `\n<img src="${url}" class="w-full rounded-lg my-6 shadow-sm" alt="Story Image" />\n`;
+                
+                textarea.value = text.substring(0, start) + imgTag + text.substring(end);
+                textarea.focus();
+            },
+
+            saveSettings: function(btn) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="animate-spin w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full inline-block"></i> Saving...`;
+                btn.disabled = true;
+
+                const brandName = document.getElementById('setting-brandName').value;
+                const brandLogo = document.getElementById('setting-brandLogo').value;
+                const freeImageHostApiKey = document.getElementById('setting-api').value;
+
+                set(ref(db, 'settings'), { brandName, brandLogo, freeImageHostApiKey })
+                    .then(() => {
+                        showToast("Settings saved successfully!");
+                        currentSettings = { brandName, brandLogo, freeImageHostApiKey };
+                    })
+                    .catch(err => showToast("Error: " + err.message, true))
+                    .finally(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+            },
+            savePost: function(btn, id) {
+                const title = document.getElementById('input-title').value;
+                const excerpt = document.getElementById('input-excerpt').value;
+                const content = document.getElementById('input-content').value;
+                const coverImage = document.getElementById('input-image').value;
+                const author = document.getElementById('input-author').value;
+                const tagsVal = document.getElementById('input-tags').value;
+                const tags = tagsVal ? tagsVal.split(',').map(t => t.trim()).filter(t => t) : [];
+
+                if(!title) return showToast("Title is required", true);
+                if(!content) return showToast("Content is required", true);
+
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="animate-spin w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full inline-block"></i> ${id ? 'Saving...' : 'Publishing...'}`;
+                btn.disabled = true;
+
+                const existingData = (id && currentPosts[id]) ? currentPosts[id] : {};
+
+                const postData = {
+                    ...existingData,
+                    title, excerpt, content, coverImage, author, tags,
+                    date: existingData.date || new Date().toISOString()
+                };
+
+                const promise = id 
+                    ? set(ref(db, 'posts/' + id), postData) 
+                    : push(ref(db, 'posts'), postData);
+
+                promise
+                    .then(() => {
+                        showToast(id ? "Story updated!" : "Story published!");
+                        router.navigate('dashboard');
+                    })
+                    .catch(err => {
+                        showToast("Error saving: " + err.message, true);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+            },
+            deletePost: function(id) {
+                if(confirm('Are you sure you want to delete this story?')) {
+                    remove(ref(db, 'posts/' + id))
+                    .then(() => showToast("Story deleted."))
+                    .catch(err => showToast("Error deleting: " + err.message, true));
+                }
+            },
+            addSubscriber: function() {
+                const email = prompt("Enter email address to subscribe:");
+                if (email) {
+                     // Basic email check
+                     if(email.includes('@') && email.includes('.')) {
+                        push(ref(db, 'subscribers'), {
+                            email: email,
+                            date: new Date().toISOString()
+                        })
+                        .then(() => showToast("Subscriber added manually."))
+                        .catch(err => showToast("Error: " + err.message, true));
+                     } else {
+                         showToast("Invalid email format", true);
+                     }
+                }
+            },
+            deleteSubscriber: function(id) {
+                if(confirm('Remove this subscriber?')) {
+                    remove(ref(db, 'subscribers/' + id))
+                    .then(() => showToast("Subscriber removed."))
+                    .catch(err => showToast("Error: " + err.message, true));
+                }
+            },
+            savePage: function(btn, pageId) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="animate-spin w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full inline-block"></i> Saving...`;
+                btn.disabled = true;
+
+                const content = document.getElementById('page-content').value;
+                set(ref(db, 'pages/' + pageId), content)
+                    .then(() => showToast(pageId.charAt(0).toUpperCase() + pageId.slice(1) + " page updated!"))
+                    .catch(err => showToast("Error: " + err.message, true))
+                    .finally(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+            }
+        };
+
+        window.router = router;
+        window.actions = actions;
+
+        function render() {
+            const app = document.getElementById('app');
+            if (router.view === 'dashboard') {
+                app.innerHTML = renderDashboard();
+            } else if (router.view === 'new') {
+                app.innerHTML = renderEditor();
+            } else if (router.view === 'edit') {
+                app.innerHTML = renderEditor(router.param);
+            } else if (router.view === 'settings') {
+                app.innerHTML = renderSettings();
+            } else if (router.view === 'subscribers') {
+                app.innerHTML = renderSubscribers();
+            } else if (router.view === 'pages') {
+                app.innerHTML = renderPagesView();
+            }
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        // Init Data Streams
+        onValue(ref(db, 'posts'), (snapshot) => {
+            currentPosts = snapshot.val() || {};
+            if (router.view === 'dashboard') render(); 
+        });
+
+        onValue(ref(db, 'settings'), (snapshot) => {
+            const data = snapshot.val() || {};
+            currentSettings = { 
+                brandName: data.brandName || 'DREAMYBEAUTYHUB', 
+                brandLogo: data.brandLogo || '', 
+                freeImageHostApiKey: data.freeImageHostApiKey || '' 
+            };
+        });
+
+        onValue(ref(db, 'subscribers'), (snapshot) => {
+            currentSubscribers = snapshot.val() || {};
+            if (router.view === 'subscribers') render();
+        });
+
+        onValue(ref(db, 'pages'), (snapshot) => {
+            currentPages = snapshot.val() || {};
+            if (router.view === 'pages') render(); // Re-render if looking at pages to show updates
+        });
+
+        // Initial render
+        render();
+
+    </script>
+
+    <div id="app">
+        <div class="flex justify-center items-center h-screen bg-rose-50">
+            <div class="flex flex-col items-center gap-4">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
+                <p class="text-rose-400 font-serif italic animate-pulse">Loading Studio...</p>
+            </div>
+        </div>
+    </div>
+
 </body>
-
 </html>
